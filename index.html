@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargando ecosistema... | Liderazgo e IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Space+Grotesk:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/scrollreveal"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        tech: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#0A2540',
+                            gold: '#D4AF37',
+                            green: '#00E676',
+                            neon: '#00F0FF',
+                            dark: '#030712',
+                            panel: '#111827'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-15px)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 10px rgba(0, 230, 118, 0.2)' },
+                            '100%': { boxShadow: '0 0 30px rgba(0, 230, 118, 0.8)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            background-color: #030712;
+            color: #e5e7eb;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .glassmorphism {
+            background: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .cyber-grid {
+            background-image:
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center center;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 177.77%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 1rem;
+            background: #000;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
+            z-index: 40;
+        }
+
+        .video-container iframe,
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Clase Mini-Player Flotante */
+        .video-pip {
+            position: fixed !important;
+            top: 6rem !important;
+            right: 1.5rem !important;
+            width: 160px !important;
+            padding-bottom: 284px !important;
+            z-index: 100;
+            border: 2px solid rgba(0, 240, 255, 0.6);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(0, 240, 255, 0.4);
+            border-radius: 0.75rem;
+        }
+
+        .video-pip .pip-hide {
+            display: none !important;
+        }
+
+        .pip-show-only {
+            display: none !important;
+        }
+
+        .video-pip .pip-show-only {
+            display: flex !important;
+        }
+
+        .video-pip.pip-minimized {
+            width: 64px !important;
+            padding-bottom: 64px !important;
+            border-radius: 50% !important;
+        }
+
+        .video-pip.pip-minimized video,
+        .video-pip.pip-minimized .pip-hide,
+        .video-pip.pip-minimized #video-overlay {
+            display: none !important;
+        }
+
+        .video-pip.pip-minimized #pip-controls {
+            opacity: 1 !important;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .video-pip.pip-minimized #pip-close-btn {
+            display: none !important;
+        }
+
+        .video-pip.pip-closed {
+            display: none !important;
+        }
+
+        .gold-border-gradient {
+            background: linear-gradient(135deg, #00F0FF, #D4AF37, #00E676);
+            padding: 2px;
+            border-radius: 1rem;
+        }
+
+        #loader {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #030712;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: opacity 0.5s ease;
+        }
+
+        .ai-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 240, 255, 0.5);
+            animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+
+        /* Clases para ocultar y mostrar el CTA bajo el video horizontal */
+        .hidden-cta {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .visible-cta {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            height: auto;
+            margin-top: 3rem;
+            /* Espaciado equivalente a mt-12 */
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-brand-neon selection:text-brand-dark">
+
+    <div id="loader">
+        <div class="relative w-20 h-20 flex items-center justify-center mb-6">
+            <div class="ai-ring"></div>
+            <i class="fas fa-microchip text-4xl text-brand-neon animate-bounce"></i>
+        </div>
+        <p class="text-lg font-tech animate-pulse tracking-widest text-brand-neon">INICIALIZANDO ECOSISTEMA...</p>
+    </div>
+
+    <!-- Botón Flotante de WhatsApp -->
+    <a href="#" target="_blank"
+        class="dinamico-whatsapp fixed bottom-6 right-6 z-[90] w-16 h-16 bg-brand-green rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 animate-glow group">
+        <i class="fab fa-whatsapp text-white text-4xl"></i>
+        <span
+            class="absolute right-20 bg-gray-900 text-white text-sm font-semibold px-4 py-2 rounded-xl opacity-0 group-hover:opacity-100 transition whitespace-nowrap border border-white/10 shadow-2xl pointer-events-none">
+            Iniciar Chat Automático
+        </span>
+    </a>
+
+    <div id="app-content" style="opacity: 0; transition: opacity 0.5s ease;">
+
+        <!-- Navbar Glassmorphism -->
+        <nav class="fixed w-full z-50 glassmorphism transition-all duration-300" id="navbar">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-20">
+                    <div class="flex-shrink-0 flex items-center reveal-left">
+                        <a href="/" class="brand-logo">
+                            <img src="https://cdn.nexflow.chat/storage_agente/immunotec-723073/scaled_logo_equipo_expansion_pro_sin_fondo.png"
+                                alt="Equipo Expansión PRO - IA & Biotecnología"
+                                style="height: 48px; width: auto; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.2));" />
+                        </a>
+                    </div>
+                    <div class="hidden md:flex space-x-8 items-center reveal-right">
+                        <a href="#dolor"
+                            class="text-gray-300 hover:text-brand-neon font-medium transition hover:-translate-y-0.5 transform">El
+                            Problema</a>
+                        <a href="#mentora"
+                            class="text-gray-300 hover:text-brand-neon font-medium transition hover:-translate-y-0.5 transform dinamico-menu-mentor">Mentora</a>
+                        <a href="#sistema"
+                            class="text-gray-300 hover:text-brand-neon font-medium transition hover:-translate-y-0.5 transform">Mi
+                            Propuesta Híbrida</a>
+                        <a href="#resultados" id="nav-resultados-desktop"
+                            class="hidden text-gray-300 hover:text-brand-neon font-medium transition hover:-translate-y-0.5 transform">Resultados</a>
+                        <a href="#oportunidad"
+                            class="text-brand-gold hover:text-white transition font-bold drop-shadow-md">La
+                            Oportunidad</a>
+                        <a href="#contacto"
+                            class="bg-brand-neon/10 border border-brand-neon text-brand-neon px-6 py-2 rounded-full font-bold hover:bg-brand-neon hover:text-brand-dark transition shadow-[0_0_15px_rgba(0,240,255,0.3)]">Agendar
+                            Cita</a>
+                    </div>
+                    <div class="md:hidden flex items-center">
+                        <button id="mobile-menu-btn" class="text-gray-300 hover:text-brand-neon focus:outline-none">
+                            <i class="fas fa-bars text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="mobile-menu"
+                class="hidden md:hidden bg-brand-panel border-t border-gray-800 absolute w-full shadow-2xl">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <a href="#dolor"
+                        class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-800 hover:text-brand-neon transition">El
+                        Problema</a>
+                    <a href="#mentora"
+                        class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-800 hover:text-brand-neon transition dinamico-menu-mentor">Mentora</a>
+                    <a href="#sistema"
+                        class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-800 hover:text-brand-neon transition">Mi
+                        Propuesta Híbrida</a>
+                    <a href="#resultados" id="nav-resultados-mobile"
+                        class="hidden px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-800 hover:text-brand-neon transition">Resultados</a>
+                    <a href="#oportunidad"
+                        class="block px-3 py-2 text-base font-bold text-brand-gold hover:text-white transition">La
+                        Oportunidad</a>
+                    <a href="#vehiculo"
+                        class="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-800 hover:text-brand-neon transition">Immunotec</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section id="hero" class="relative pt-32 pb-20 lg:pt-40 lg:pb-28 min-h-screen flex items-center cyber-grid">
+            <div class="absolute inset-0 z-0">
+                <div
+                    class="absolute inset-0 bg-gradient-to-r from-brand-dark/95 via-brand-dark/70 to-brand-dark/40 z-10">
+                </div>
+                <img id="dinamico-foto-hero" src="" alt="Fondo Hero"
+                    class="w-full h-full object-cover object-center lg:object-[center_20%] opacity-70">
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 w-full">
+                <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
+
+                    <div class="w-full lg:w-1/2 text-center lg:text-left reveal-fade-up">
+                        <div
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-neon/10 border border-brand-neon/30 text-brand-neon font-medium text-xs uppercase tracking-widest mb-6">
+                            <span class="relative flex h-2 w-2">
+                                <span
+                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-neon opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-neon"></span>
+                            </span>
+                            La Nueva Era del Network Marketing
+                        </div>
+
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-tech text-white leading-tight mb-6">
+                            El Modelo Tradicional Está <span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-400">Roto.</span>
+                            <br>
+                            <span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-brand-neon to-brand-green">Atrae,
+                                No Persigas.</span>
+                        </h1>
+
+                        <p class="text-xl text-gray-400 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                            Soy <strong class="text-white dinamico-nombre">Líder</strong> y te enseñaré a escalar tus
+                            resultados fusionando el sólido liderazgo de <strong>Immunotec</strong> con el poder de
+                            prospección en piloto automático de mi propuesta: <strong>El Ecosistema Híbrido</strong>.
+                        </p>
+
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start reveal-fade-up"
+                            style="transition-delay: 200ms;">
+                            <a href="#contacto"
+                                class="flex items-center justify-center gap-3 bg-brand-green text-gray-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-white transition shadow-[0_0_20px_rgba(0,230,118,0.5)] transform hover:-translate-y-1">
+                                <i class="fab fa-whatsapp text-2xl"></i>
+                                Ver Sistema en Acción
+                            </a>
+                        </div>
+                    </div>
+
+                    <div id="video-anchor"
+                        class="w-full sm:w-2/3 md:w-1/2 lg:w-5/12 max-w-sm mx-auto relative reveal-fade-left">
+                        <div
+                            class="absolute -inset-2 bg-gradient-to-tr from-brand-neon to-brand-green rounded-2xl blur-2xl opacity-20 animate-pulse-slow">
+                        </div>
+
+                        <!-- Video Contenedor Interactivo -->
+                        <div id="video-wrapper" class="video-container group border border-white/10 relative">
+                            <!-- Controles PIP -->
+                            <div id="pip-controls"
+                                class="absolute top-2 right-2 z-50 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity pip-show-only">
+                                <button id="pip-min-btn"
+                                    class="w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-brand-neon hover:text-black backdrop-blur-md transition-colors">
+                                    <i class="fas fa-compress-arrows-alt"></i>
+                                </button>
+                                <button id="pip-close-btn"
+                                    class="w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-red-500 hover:text-white backdrop-blur-md transition-colors">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+
+                            <!-- Overlay para habilitar Sonido -->
+                            <div id="video-overlay"
+                                class="absolute inset-0 bg-black/60 z-20 flex flex-col items-center justify-center cursor-pointer hover:bg-black/40 transition-colors pip-hide backdrop-blur-sm">
+                                <div
+                                    class="w-16 h-16 bg-brand-neon/20 rounded-full flex items-center justify-center mb-4 border border-brand-neon animate-pulse">
+                                    <i class="fas fa-volume-up text-brand-neon text-2xl"></i>
+                                </div>
+                                <span class="text-white font-bold tracking-wide uppercase text-sm">Toque para
+                                    escuchar</span>
+                            </div>
+
+                            <!-- Video inyectado dinámicamente -->
+                            <div id="video-inner"></div>
+
+                            <div
+                                class="absolute bottom-4 left-4 right-4 flex justify-between items-end pip-hide z-10 pointer-events-none">
+                                <div>
+                                    <p
+                                        class="text-white font-bold text-sm shadow-black drop-shadow-md flex items-center gap-2">
+                                        <i class="fas fa-circle text-[8px] text-red-500 animate-pulse"></i> REC
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección El Problema -->
+        <section id="dolor" class="py-20 bg-brand-dark border-t border-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-3xl mx-auto">
+                    <div class="text-center mb-12 reveal-fade-up">
+                        <h2 class="text-sm font-bold text-red-500 tracking-wider uppercase mb-2">La Realidad</h2>
+                        <h3 class="text-3xl md:text-4xl font-tech text-white mb-6">La Cruda Verdad del Liderazgo Actual
+                        </h3>
+                    </div>
+
+                    <div
+                        class="bg-brand-panel border border-red-900/30 p-8 rounded-2xl reveal-scale-up relative overflow-hidden shadow-2xl">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-red-900/10 blur-3xl rounded-full"></div>
+                        <p class="text-lg text-gray-300 mb-6 font-medium relative z-10">Sé perfectamente cómo te
+                            sientes. Tienes visión y hambre de éxito, pero seamos honestos:</p>
+
+                        <ul class="space-y-6 relative z-10">
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0 mt-1 text-red-500 bg-red-950/50 p-2 rounded-lg">
+                                    <i class="fas fa-times-circle text-lg"></i>
+                                </div>
+                                <p class="ml-4 text-gray-400">Estás exhausto de hacer "listas de contactos" que terminan
+                                    en rechazos incómodos con amigos y familiares.</p>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0 mt-1 text-red-500 bg-red-950/50 p-2 rounded-lg">
+                                    <i class="fas fa-times-circle text-lg"></i>
+                                </div>
+                                <p class="ml-4 text-gray-400">Pasas horas en el celular intentando convencer a
+                                    prospectos que no están calificados, sacrificando el valioso tiempo de tu familia.
+                                </p>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0 mt-1 text-red-500 bg-red-950/50 p-2 rounded-lg">
+                                    <i class="fas fa-times-circle text-lg"></i>
+                                </div>
+                                <p class="ml-4 text-gray-400">Tu equipo se estanca rápidamente porque la duplicación
+                                    tradicional depende del desgaste físico.</p>
+                            </li>
+                        </ul>
+
+                        <div class="mt-8 pt-6 border-t border-gray-800 text-center relative z-10">
+                            <p class="text-xl font-tech text-white">
+                                El problema no es tu esfuerzo.<br>
+                                <span class="text-red-500">Es que trabajas sin un ecosistema digital.</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Mentora/Mentor -->
+        <section id="mentora" class="py-20 bg-[#070d19] cyber-grid">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="gold-border-gradient shadow-[0_0_40px_rgba(0,240,255,0.1)] reveal-fade-up">
+                    <div class="bg-brand-panel rounded-[14px] p-8 md:p-12 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-brand-gold opacity-10 rounded-full blur-2xl">
+                        </div>
+
+                        <div class="flex flex-col md:flex-row items-center gap-10 relative z-10">
+                            <div
+                                class="w-48 h-48 md:w-64 md:h-64 flex-shrink-0 rounded-full border-2 border-brand-neon shadow-[0_0_30px_rgba(0,240,255,0.3)] overflow-hidden relative group">
+                                <img id="dinamico-foto-perfil" src="" alt="Perfil"
+                                    class="w-full h-full object-cover object-top transition duration-700 group-hover:scale-110">
+                            </div>
+
+                            <div class="text-center md:text-left">
+                                <h2
+                                    class="text-xs font-bold text-brand-gold tracking-widest uppercase mb-2 dinamico-titulo-mentor">
+                                    Conoce a tu Futura Mentora</h2>
+                                <h3 class="text-3xl font-tech text-white mb-4 dinamico-nombre">Líder</h3>
+                                <div
+                                    class="w-16 h-1 bg-gradient-to-r from-brand-gold to-brand-neon mx-auto md:mx-0 mb-6 rounded">
+                                </div>
+                                <p id="dinamico-bio"
+                                    class="text-gray-400 mb-4 text-lg leading-relaxed whitespace-pre-line">Cargando
+                                    biografía...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Sistema -->
+        <section id="sistema" class="py-20 bg-brand-dark border-t border-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center mb-16 reveal-fade-up">
+                    <h2 class="text-sm font-bold text-brand-neon tracking-widest uppercase mb-2">Mi Propuesta de Valor
+                        Única</h2>
+                    <h3 class="text-3xl md:text-4xl font-tech text-white mb-4">El Ecosistema Híbrido: Redes Sociales, IA
+                        y Cierres Humanos</h3>
+                    <p class="text-lg text-gray-400 max-w-3xl mx-auto">
+                        No te unas a un equipo para hacer lo mismo de siempre. Al unirte a mi organización, te
+                        instalamos la infraestructura tecnológica para firmar nuevos socios en automático.
+                    </p>
+                </div>
+
+                <div
+                    class="bg-brand-panel rounded-2xl p-8 mb-12 border border-gray-800 text-center shadow-2xl reveal-scale-up">
+                    <p class="text-xl font-light text-gray-300 italic">
+                        "Imagina despertar, revisar tu WhatsApp, y encontrar <strong class="text-brand-neon">líderes
+                            calificados desde Redes Sociales</strong>, filtrados por nuestro sistema NexFlow IA, listos
+                        para escuchar tu propuesta final."
+                    </p>
+                </div>
+
+                <div
+                    class="bg-brand-panel rounded-2xl p-8 mb-12 border border-gray-800 text-center shadow-2xl reveal-scale-up">
+                    <p class="text-xl font-light text-gray-300 italic">
+                        "Imagina despertar, revisar tu calendario, y encontrar <strong class="text-brand-neon">citas
+                            agendadas con prospectos precalificados</strong>. Personas que ya tienen interés y
+                        solvencia, esperando hablar contigo para dar el paso final."
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div
+                        class="bg-[#0b1325] p-8 rounded-xl border border-gray-800 hover:border-brand-neon/50 transition duration-300 group reveal-fade-up">
+                        <div
+                            class="w-14 h-14 bg-gray-900 rounded-lg flex items-center justify-center mb-6 group-hover:bg-brand-neon/20 transition-colors">
+                            <i class="fas fa-magnet text-2xl text-gray-400 group-hover:text-brand-neon"></i>
+                        </div>
+                        <h4 class="text-xl font-tech text-white mb-3">1. Atracción Masiva</h4>
+                        <p class="text-sm text-gray-400">Implementamos campañas profesionales en redes sociales para que
+                            los prospectos correctos lleguen directamente a tu WhatsApp, sin que tengas que perseguir a
+                            nadie.</p>
+                    </div>
+
+                    <div
+                        class="bg-[#0b1325] p-8 rounded-xl border border-gray-800 hover:border-brand-green/50 transition duration-300 group relative reveal-fade-up">
+                        <div
+                            class="absolute -top-3 -right-3 bg-brand-green text-brand-dark text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                            24/7 ACTIVO</div>
+                        <div
+                            class="w-14 h-14 bg-gray-900 rounded-lg flex items-center justify-center mb-6 group-hover:bg-brand-green/20 transition-colors">
+                            <i class="fas fa-robot text-2xl text-gray-400 group-hover:text-brand-green"></i>
+                        </div>
+                        <h4 class="text-xl font-tech text-white mb-3">2. Filtro con NexFlow IA</h4>
+                        <p class="text-sm text-gray-400">Nuestro agente virtual impulsado por NexFlow atiende
+                            inmediatamente en WhatsApp, responde dudas corporativas, rebate objeciones y separa a los
+                            curiosos de los verdaderos líderes interesados.</p>
+                    </div>
+
+                    <div
+                        class="bg-[#0b1325] p-8 rounded-xl border border-gray-800 hover:border-brand-gold/50 transition duration-300 group reveal-fade-up">
+                        <div
+                            class="w-14 h-14 bg-gray-900 rounded-lg flex items-center justify-center mb-6 group-hover:bg-brand-gold/20 transition-colors">
+                            <i class="fas fa-calendar-check text-2xl text-gray-400 group-hover:text-brand-gold"></i>
+                        </div>
+                        <h4 class="text-xl font-tech text-white mb-3">3. Cierres Humanos</h4>
+                        <p class="text-sm text-gray-400">Despierta con citas agendadas en tu calendario. Tú solo
+                            intervienes cuando el prospecto ya está filtrado, educado y listo para dar el paso final
+                            contigo.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Vehículo (Immunotec) -->
+        <section id="vehiculo" class="py-20 bg-[#070d19] cyber-grid border-t border-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col lg:flex-row items-center gap-12">
+
+                    <div class="w-full lg:w-1/2 reveal-fade-right">
+                        <h2 class="text-sm font-bold text-gray-500 tracking-wider uppercase mb-2">El Motor Financiero
+                        </h2>
+                        <h3 class="text-3xl md:text-4xl font-tech text-white mb-6">El Vehículo Perfecto que He Elegido:
+                            <span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-brand-neon">Immunotec</span>
+                        </h3>
+
+                        <p class="text-lg text-gray-400 mb-8">
+                            Toda la tecnología de automatización necesita conectarse al titán más sólido de la industria
+                            para generar verdadera riqueza y estabilidad a largo plazo.
+                        </p>
+
+                        <div class="space-y-6">
+                            <div class="flex group">
+                                <div class="flex-shrink-0">
+                                    <div
+                                        class="flex items-center justify-center h-12 w-12 rounded-md bg-gray-800 text-brand-neon group-hover:bg-brand-neon group-hover:text-brand-dark transition-colors duration-300">
+                                        <i class="fas fa-flask text-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <h4
+                                        class="text-xl font-tech text-gray-200 group-hover:text-brand-neon transition-colors">
+                                        Liderazgo y Ciencia Inquebrantable</h4>
+                                    <p class="mt-2 text-sm text-gray-500">Respaldo de 45 años, $25 millones invertidos
+                                        en investigación, 80 patentes globales y aparición destacada en diccionarios
+                                        médicos oficiales como PDR y CPS.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex group">
+                                <div class="flex-shrink-0">
+                                    <div
+                                        class="flex items-center justify-center h-12 w-12 rounded-md bg-gray-800 text-brand-green group-hover:bg-brand-green group-hover:text-brand-dark transition-colors duration-300">
+                                        <i class="fas fa-chart-line text-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <h4
+                                        class="text-xl font-tech text-gray-200 group-hover:text-brand-green transition-colors">
+                                        Plan de Compensación para Líderes</h4>
+                                    <p class="mt-2 text-sm text-gray-500">Diseñado para la capitalización rápida. Gana
+                                        <strong class="text-gray-300">Bonos Acelerados en efectivo</strong> además de
+                                        tus jugosas comisiones residuales por el volumen de tu equipo.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full lg:w-1/2 reveal-fade-left">
+                        <div
+                            class="bg-brand-panel rounded-2xl p-8 border border-gray-800 shadow-[0_0_40px_rgba(0,0,0,0.8)] relative overflow-hidden group">
+                            <div
+                                class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-brand-gold rounded-full opacity-10 blur-xl">
+                            </div>
+
+                            <h4 class="text-xl font-tech text-center text-white mb-6 relative z-10">Ejemplo de Bonos
+                                Acelerados <span class="text-sm font-sans text-gray-500 block sm:inline">(Mercado
+                                    Bolivia)</span></h4>
+
+                            <div
+                                class="overflow-hidden bg-gray-900 shadow-sm sm:rounded-lg border border-gray-800 relative z-10">
+                                <table class="min-w-full divide-y divide-gray-800">
+                                    <thead class="bg-gray-800">
+                                        <tr>
+                                            <th scope="col"
+                                                class="px-6 py-4 text-left text-xs font-bold text-gray-300 uppercase tracking-wider">
+                                                Rango Meta</th>
+                                            <th scope="col"
+                                                class="px-6 py-4 text-left text-xs font-bold text-gray-300 uppercase tracking-wider">
+                                                Límite</th>
+                                            <th scope="col"
+                                                class="px-6 py-4 text-right text-xs font-bold text-brand-gold uppercase tracking-wider">
+                                                Bono Extra</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-800">
+                                        <tr class="hover:bg-gray-800/50 transition duration-200">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-300">
+                                                PLATA</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2 Meses</td>
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm font-bold text-brand-green text-right">
+                                                Bs. 3,520</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-800/50 transition duration-200">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-300">
+                                                ORO</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">4 Meses</td>
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm font-bold text-brand-green text-right">
+                                                Bs. 8,800</td>
+                                        </tr>
+                                        <tr class="bg-brand-neon/5 hover:bg-brand-neon/10 transition duration-300">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm font-bold text-brand-neon flex items-center gap-2">
+                                                <i class="fas fa-gem"></i> DIAMANTE
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400 font-medium">8
+                                                Meses</td>
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-sm font-extrabold text-brand-green text-right text-lg">
+                                                Bs. 44,000</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p class="text-xs text-gray-600 mt-4 text-center relative z-10">*Valores de ejemplo basados
+                                en el plan de compensación oficial. Estos bonos se suman a las comisiones residuales.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: LA OPORTUNIDAD (Video Horizontal YouTube Style) -->
+        <section id="oportunidad" class="py-24 bg-brand-dark border-t border-gray-800 cyber-grid relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+                <div class="text-center mb-12 reveal-fade-up">
+                    <p class="text-sm font-tech text-brand-gold tracking-widest uppercase mb-2"><i
+                            class="fas fa-gem"></i> Escucha con atención</p>
+                    <h2 class="text-4xl md:text-5xl font-tech text-white mb-4">El Vehículo y la Estrategia</h2>
+                    <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+                        Toda tecnología necesita un modelo sólido. Reproduce esta presentación y descubre cómo
+                        combinamos nuestra automatización con un titán de la industria para generar riqueza.
+                    </p>
+                </div>
+
+                <div class="flex flex-col items-center justify-center">
+
+                    <!-- Contenedor del Video Horizontal (16:9) -->
+                    <div class="w-full max-w-4xl relative reveal-scale-up group">
+                        <div
+                            class="absolute -inset-1 bg-gradient-to-r from-brand-gold to-brand-neon rounded-2xl blur-xl opacity-20 group-hover:opacity-40 transition duration-500">
+                        </div>
+
+                        <!-- Uso de aspect-video (16:9) nativo de Tailwind -->
+                        <div
+                            class="relative bg-black rounded-2xl border border-white/20 shadow-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] aspect-video w-full">
+                            <video id="video-oportunidad"
+                                src="https://cdn.nexflow.chat/storage_agente/immunotec-723073/video_presentacion_propuesta.mp4"
+                                class="w-full h-full object-cover" controls playsinline preload="metadata"></video>
+                        </div>
+                    </div>
+
+                    <!-- Botón CTA (Oculto inicialmente, se muestra con animación al finalizar el video) -->
+                    <div id="cta-oportunidad" class="hidden-cta w-full flex justify-center text-center">
+                        <div
+                            class="bg-brand-panel border border-brand-green/30 p-8 rounded-2xl max-w-2xl shadow-[0_0_30px_rgba(0,230,118,0.15)] w-full">
+                            <h3 class="text-2xl font-tech text-white mb-4">¿Estás listo para dar el siguiente paso?</h3>
+                            <p class="text-gray-400 mb-6">El momento es ahora. Posiciónate en nuestro equipo con tu
+                                propio ecosistema de Inteligencia Artificial.</p>
+
+                            <a href="#"
+                                class="dinamico-whatsapp inline-flex items-center justify-center gap-3 w-full sm:w-auto bg-brand-green hover:bg-white text-gray-900 px-10 py-5 rounded-xl font-bold text-lg transition shadow-[0_0_30px_rgba(0,230,118,0.5)] transform hover:scale-105"
+                                target="_blank">
+                                <i class="fab fa-whatsapp text-3xl"></i>
+                                Sí, quiero Iniciar y Configurar mi Sistema
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: RESULTADOS (Oculta por defecto) -->
+        <section id="resultados" class="py-20 bg-brand-dark border-t border-gray-800 hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12 reveal-fade-up">
+                    <h2 class="text-sm font-bold text-brand-neon tracking-widest uppercase mb-2">Evidencia</h2>
+                    <h3 class="text-3xl md:text-4xl font-tech text-white mb-6">Resultados del Sistema</h3>
+                    <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+                        Estos son algunos de los resultados generados gracias al poder de la automatización y nuestro
+                        ecosistema.
+                    </p>
+                </div>
+
+                <div id="resultados-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Contenido inyectado dinámicamente -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: EQUIPO EXPANSIÓN PRO -->
+        <section id="equipo-pro" class="py-24 bg-[#0a1120] border-t border-gray-800 cyber-grid relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="flex flex-col lg:flex-row items-center gap-12">
+                    <div class="lg:w-1/2 reveal-fade-right">
+                        <img src="https://cdn.nexflow.chat/storage_agente/immunotec-723073/scaled_logo_equipo_expansion_pro_sin_fondo.png"
+                            alt="Equipo Expansión PRO"
+                            class="w-full max-w-md mx-auto drop-shadow-[0_0_30px_rgba(0,242,254,0.3)] hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="lg:w-1/2 reveal-fade-left">
+                        <h2 class="text-3xl md:text-5xl font-tech text-white mb-6">Únete al <span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-brand-neon to-brand-green">Equipo
+                                Expansión PRO</span></h2>
+                        <p class="text-lg text-gray-400 mb-6 leading-relaxed">
+                            Al formar parte de nuestra organización, no solo te unes a una excelente compañía con el
+                            mejor plan de compensación, te integras a una <strong>maquinaria de crecimiento
+                                acelerado</strong>. Obtendrás acceso directo al respaldo de líderes de alto impacto y
+                            aprenderás a aprovechar herramientas como este Ecosistema Híbrido.
+                        </p>
+                        <ul class="text-gray-300 space-y-4 mb-8">
+                            <li class="flex items-center gap-3">
+                                <i class="fas fa-check-circle text-brand-neon text-xl"></i>
+                                <span>Apalancamiento de un equipo sólido y en constante expansión mundial.</span>
+                            </li>
+                            <li class="flex items-center gap-3">
+                                <i class="fas fa-check-circle text-brand-neon text-xl"></i>
+                                <span>Mentoría directa, capacitación constante y estrategias probadas en campo.</span>
+                            </li>
+                            <li class="flex items-center gap-3">
+                                <i class="fas fa-check-circle text-brand-neon text-xl"></i>
+                                <span>Posicionamiento inteligente para que capitalices rápidamente.</span>
+                            </li>
+                        </ul>
+                        <a href="#"
+                            class="dinamico-whatsapp inline-flex items-center justify-center gap-3 w-full sm:w-auto bg-brand-neon text-brand-dark font-bold text-lg px-8 py-4 rounded-xl hover:bg-white hover:text-brand-dark transition shadow-[0_0_20px_rgba(0,240,255,0.4)] transform hover:-translate-y-1">
+                            <i class="fab fa-whatsapp text-2xl"></i>
+                            Hablar por WhatsApp
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Final -->
+        <section id="contacto"
+            class="py-24 relative overflow-hidden bg-[#070d19] border-t border-gray-800 flex justify-center items-center text-center">
+            <div class="absolute w-[500px] h-[500px] bg-brand-neon/10 rounded-full blur-[120px] pointer-events-none">
+            </div>
+
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+                <h2 class="text-3xl md:text-5xl font-tech text-white mb-6 reveal-fade-up">Tu Oportunidad de Ser Pionero
+                    en mi Equipo</h2>
+
+                <p class="text-xl text-gray-400 mb-10 leading-relaxed reveal-fade-up">
+                    Ser pionero tiene su recompensa. Tienes la oportunidad de ser parte de mi movimiento para
+                    profesionalizar el Network Marketing con Inteligencia Artificial. <strong
+                        class="text-brand-neon">Juntos haremos que tu liderazgo escale a nivel global.</strong>
+                </p>
+
+                <div
+                    class="bg-brand-panel border border-gray-800 p-8 rounded-2xl max-w-2xl mx-auto reveal-scale-up shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+                    <h3 class="text-2xl font-tech text-white mb-6">Toma el control de tu crecimiento hoy</h3>
+
+                    <a href="#"
+                        class="dinamico-whatsapp inline-flex items-center justify-center gap-3 w-full sm:w-auto bg-brand-green hover:bg-white text-gray-900 px-8 py-5 rounded-full font-bold text-lg transition shadow-[0_0_20px_rgba(0,230,118,0.4)] hover:shadow-[0_0_40px_rgba(0,230,118,0.8)] transform hover:scale-105"
+                        target="_blank">
+                        <i class="fab fa-whatsapp text-3xl"></i>
+                        <span>Agendar Sesión con <span class="dinamico-nombre">Líder</span></span>
+                    </a>
+
+                    <p class="mt-6 text-sm text-gray-500">
+                        <i class="fas fa-lock mr-1 text-brand-gold"></i>
+                        Las plazas para mi mentoría e instalación del ecosistema NexFlow son limitadas.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-[#010308] border-t border-gray-900 py-10">
+            <div
+                class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="font-tech text-xl text-white">
+                    <span class="dinamico-nombre">Líder</span><span class="text-brand-neon">_</span>
+                </div>
+
+                <div class="text-gray-600 text-xs text-center md:text-left">
+                    &copy;
+                    <script>document.write(new Date().getFullYear())</script> <span
+                        class="dinamico-nombre">Líder</span>. Todos los derechos reservados.<br>
+                    Las cifras de ingresos son ejemplos del plan de compensación de Immunotec.
+                </div>
+
+                <div class="flex gap-4">
+                    <a href="https://nexflow.chat" target="_blank" rel="noopener noreferrer"
+                        class="text-gray-500 text-sm flex items-center gap-2 hover:text-brand-neon transition-colors group border border-gray-800 px-3 py-1 rounded-full bg-brand-dark cursor-pointer">
+                        <i class="fas fa-bolt text-brand-neon group-hover:animate-pulse"></i>
+                        Powered by <strong class="text-white group-hover:text-brand-neon transition-colors">NexFlow
+                            IA</strong>
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- SCRIPT MULTITENANT, GÉNERO, VIDEO PIP Y LÓGICA DE REPRODUCCIÓN -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const currentDomain = window.location.hostname;
+            const projectId = 'page-jovert-08256580-26786';
+            const collection = 'site_web_instance';
+            const queryUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents:runQuery`;
+
+            const queryBody = {
+                structuredQuery: {
+                    from: [{ collectionId: collection }],
+                    where: { fieldFilter: { field: { fieldPath: "domain" }, op: "EQUAL", value: { stringValue: currentDomain } } },
+                    limit: 1
+                }
+            };
+
+            fetch(queryUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(queryBody)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data[0] && data[0].document && data[0].document.fields && data[0].document.fields.data_site_web) {
+                        const fields = data[0].document.fields.data_site_web.mapValue.fields;
+                        const name = fields.name_owner?.stringValue || 'Líder';
+                        const bio = fields.bio_owner?.stringValue || 'Bienvenido a mi ecosistema híbrido.';
+
+                        const rawPhone = fields.phone_whatsapp?.stringValue || '';
+                        const cleanPhone = rawPhone.replace(/\D/g, '');
+
+                        const fotoHero = fields.foto_hero?.stringValue || 'https://via.placeholder.com/1920x1080';
+                        const fotoPerfil = fields.foto_perfil?.stringValue || 'https://via.placeholder.com/400x400';
+                        const videoHero = fields.video_hero?.stringValue || '';
+
+                        // Extraer listaResultados desde la raíz del documento y no desde data_site_web
+                        const docFields = data[0].document.fields;
+                        const listaResultados = docFields.lista_file_resultados?.arrayValue?.values || [];
+
+                        // Lógica para Género Dinámico
+                        const genderRaw = fields.gender?.stringValue || 'mujer';
+                        const isHombre = ['hombre', 'masculino', 'm', 'male'].includes(genderRaw.toLowerCase().trim());
+                        const textMenuMentor = isHombre ? 'Mentor' : 'Mentora';
+                        const textTituloMentor = isHombre ? 'Conoce a tu Futuro Mentor' : 'Conoce a tu Futura Mentora';
+
+                        // Inyección en el DOM
+                        document.title = `${name} | Liderazgo e IA`;
+                        document.querySelectorAll('.dinamico-nombre').forEach(el => el.textContent = name);
+                        document.getElementById('dinamico-bio').textContent = bio;
+                        document.getElementById('dinamico-foto-hero').src = fotoHero;
+                        document.getElementById('dinamico-foto-perfil').src = fotoPerfil;
+
+                        // Inyección Género
+                        document.querySelectorAll('.dinamico-menu-mentor').forEach(el => el.textContent = textMenuMentor);
+                        document.querySelectorAll('.dinamico-titulo-mentor').forEach(el => el.textContent = textTituloMentor);
+
+                        document.querySelectorAll('.dinamico-whatsapp').forEach(btn => {
+                            btn.href = `https://wa.me/${cleanPhone}`;
+                        });
+
+                        // ==========================================
+                        // LÓGICA DEL VIDEO HERO (CONTROLES, PIP)
+                        // ==========================================
+                        const videoContainerInner = document.getElementById('video-inner');
+                        const videoOverlay = document.getElementById('video-overlay');
+                        const videoWrapper = document.getElementById('video-wrapper');
+
+                        if (videoHero) {
+                            const vid = document.createElement('video');
+                            vid.src = videoHero;
+                            vid.className = "w-full h-full object-cover rounded-xl";
+                            vid.autoplay = true;
+                            vid.loop = false;
+                            vid.muted = true; // Inicia silenciado para el Autoplay seguro
+                            vid.playsInline = true;
+
+                            videoContainerInner.appendChild(vid);
+
+                            // Ocultar video al finalizar
+                            vid.addEventListener('ended', () => {
+                                videoWrapper.classList.add('pip-closed');
+                            });
+
+                            // Habilitar audio y controles al tocar el overlay
+                            videoOverlay.addEventListener('click', () => {
+                                vid.muted = false;
+                                vid.controls = true;
+                                videoOverlay.style.display = 'none';
+                            });
+
+                            // Lógica Picture-in-Picture al hacer Scroll
+                            const observer = new IntersectionObserver((entries) => {
+                                entries.forEach(entry => {
+                                    // No alterar si ya fue cerrado por el usuario
+                                    if (videoWrapper.classList.contains('pip-closed')) return;
+
+                                    if (!entry.isIntersecting) {
+                                        videoWrapper.classList.add('video-pip');
+                                    } else {
+                                        videoWrapper.classList.remove('video-pip');
+                                        // Restaurar minimizado al volver al hero
+                                        if (videoWrapper.classList.contains('pip-minimized')) {
+                                            videoWrapper.classList.remove('pip-minimized');
+                                            document.querySelector('#pip-min-btn i').className = 'fas fa-compress-arrows-alt';
+                                        }
+                                    }
+                                });
+                            }, { threshold: 0.1 });
+
+                            observer.observe(document.getElementById('video-anchor') || document.getElementById('hero'));
+
+                            // Lógica de botones PIP
+                            const btnClose = document.getElementById('pip-close-btn');
+                            const btnMin = document.getElementById('pip-min-btn');
+
+                            if (btnClose && btnMin) {
+                                btnClose.addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    videoWrapper.classList.add('pip-closed');
+                                    vid.pause();
+                                });
+
+                                btnMin.addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    videoWrapper.classList.toggle('pip-minimized');
+                                    const icon = btnMin.querySelector('i');
+                                    if (videoWrapper.classList.contains('pip-minimized')) {
+                                        icon.className = 'fas fa-expand-arrows-alt';
+                                    } else {
+                                        icon.className = 'fas fa-compress-arrows-alt';
+                                    }
+                                });
+                            }
+
+                        } else {
+                            videoOverlay.style.display = 'none';
+                            videoContainerInner.innerHTML = `<img src="${fotoHero}" class="w-full h-full object-cover rounded-xl">`;
+                        }
+
+                        // ==========================================
+                        // LÓGICA DE VIDEO DE LA OPORTUNIDAD (MOSTRAR CTA)
+                        // ==========================================
+                        const videoOportunidad = document.getElementById('video-oportunidad');
+                        const ctaOportunidad = document.getElementById('cta-oportunidad');
+
+                        if (videoOportunidad && ctaOportunidad) {
+                            // Mostrar CTA cuando termine
+                            videoOportunidad.addEventListener('ended', () => {
+                                ctaOportunidad.classList.remove('hidden-cta');
+                                ctaOportunidad.classList.add('visible-cta');
+                            });
+
+                            // Mostrar CTA 2 segundos antes de que termine o si el usuario salta el video
+                            videoOportunidad.addEventListener('timeupdate', () => {
+                                if (videoOportunidad.duration > 0 && (videoOportunidad.duration - videoOportunidad.currentTime) < 2) {
+                                    ctaOportunidad.classList.remove('hidden-cta');
+                                    ctaOportunidad.classList.add('visible-cta');
+                                }
+                            });
+                        }
+
+                        // ==========================================
+                        // LÓGICA DE RESULTADOS
+                        // ==========================================
+                        const seccionResultados = document.getElementById('resultados');
+                        const resultadosGrid = document.getElementById('resultados-grid');
+
+                        if (listaResultados.length > 0) {
+                            seccionResultados.classList.remove('hidden');
+
+                            const navResDesktop = document.getElementById('nav-resultados-desktop');
+                            const navResMobile = document.getElementById('nav-resultados-mobile');
+                            if (navResDesktop) navResDesktop.classList.remove('hidden');
+                            if (navResMobile) {
+                                navResMobile.classList.remove('hidden');
+                                navResMobile.classList.add('block');
+                            }
+                            listaResultados.forEach(item => {
+                                const url = item.stringValue;
+                                if (!url) return;
+
+                                const esVideo = url.match(/\.(mp4|webm|ogg|mov)$/i) || url.includes('video');
+
+                                const card = document.createElement('div');
+                                card.className = "bg-brand-panel border border-gray-800 rounded-2xl overflow-hidden shadow-xl reveal-scale-up";
+
+                                if (esVideo) {
+                                    card.innerHTML = `
+                                    <div class="aspect-square w-full bg-black relative">
+                                        <video src="${url}" class="w-full h-full object-cover" controls playsinline></video>
+                                    </div>
+                                `;
+                                } else {
+                                    card.innerHTML = `
+                                    <div class="aspect-square w-full bg-black relative overflow-hidden group">
+                                        <img src="${url}" alt="Resultado" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                                    </div>
+                                `;
+                                }
+                                resultadosGrid.appendChild(card);
+                            });
+                        }
+
+                        // Finalizar Carga
+                        document.getElementById('loader').style.opacity = '0';
+                        setTimeout(() => {
+                            document.getElementById('loader').style.display = 'none';
+                            document.getElementById('app-content').style.opacity = '1';
+
+                            const sr = ScrollReveal({ distance: '40px', duration: 800, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', reset: false, viewFactor: 0.2 });
+                            sr.reveal('.reveal-fade-up', { origin: 'bottom' });
+                            sr.reveal('.reveal-fade-left', { origin: 'left' });
+                            sr.reveal('.reveal-fade-right', { origin: 'right' });
+                            sr.reveal('.reveal-scale-up', { scale: 0.9, distance: '0px' });
+                        }, 500);
+
+                    } else {
+                        document.getElementById('loader').innerHTML = `<h2 class="text-2xl text-brand-neon font-tech">ERROR 404</h2><p class="text-gray-400 mt-2">Dominio ${currentDomain} no configurado.</p>`;
+                    }
+                }).catch(error => {
+                    document.getElementById('loader').innerHTML = `<h2 class="text-2xl text-red-500 font-tech">ERROR DE SISTEMA</h2><p class="text-gray-400 mt-2">Fallo en conexión Firestore.</p>`;
+                });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 20) {
+                nav.classList.add('shadow-md', 'bg-brand-panel/95');
+                nav.classList.remove('glassmorphism');
+            } else {
+                nav.classList.remove('shadow-md', 'bg-brand-panel/95');
+                nav.classList.add('glassmorphism');
+            }
+        });
+
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+        document.querySelectorAll('#mobile-menu a').forEach(link => link.addEventListener('click', () => menu.classList.add('hidden')));
+    </script>
+</body>
+
+</html>
