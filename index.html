@@ -204,6 +204,142 @@
             margin-top: 3rem;
             /* Espaciado equivalente a mt-12 */
         }
+
+        /* ===== Sección Resultados / Evidencia ===== */
+        .resultados-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .resultado-card {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        @media (min-width: 768px) {
+            .resultado-card {
+                width: calc((100% - 2rem) / 2);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .resultado-card {
+                width: calc((100% - 4rem) / 3);
+            }
+        }
+
+        .resultado-media {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .resultado-media img,
+        .resultado-media video {
+            display: block;
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+
+        .resultado-media.is-image {
+            cursor: zoom-in;
+        }
+
+        .resultado-media.is-image img {
+            transition: transform 0.5s ease;
+        }
+
+        .resultado-media.is-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .resultado-zoom-icon {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(3, 7, 18, 0.45);
+            color: #00F0FF;
+            font-size: 1.75rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .resultado-media.is-image:hover .resultado-zoom-icon {
+            opacity: 1;
+        }
+
+        /* Lightbox */
+        #lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: rgba(3, 7, 18, 0.92);
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            cursor: zoom-out;
+        }
+
+        #lightbox.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #lightbox img {
+            max-width: 95vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 0.75rem;
+            box-shadow: 0 0 50px rgba(0, 240, 255, 0.25);
+            transform: scale(0.92);
+            transition: transform 0.3s ease;
+            cursor: default;
+        }
+
+        #lightbox.open img {
+            transform: scale(1);
+        }
+
+        #lightbox-close {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            width: 2.75rem;
+            height: 2.75rem;
+            border-radius: 9999px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        #lightbox-close:hover {
+            background: #00F0FF;
+            color: #030712;
+        }
     </style>
 </head>
 
@@ -733,7 +869,7 @@
                     </p>
                 </div>
 
-                <div id="resultados-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div id="resultados-grid" class="resultados-grid">
                     <!-- Contenido inyectado dinámicamente -->
                 </div>
             </div>
@@ -842,6 +978,12 @@
                 </div>
             </div>
         </footer>
+    </div>
+
+    <!-- Lightbox para ampliar imágenes de Resultados -->
+    <div id="lightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada">
+        <button id="lightbox-close" type="button" aria-label="Cerrar"><i class="fas fa-times"></i></button>
+        <img id="lightbox-img" src="" alt="Resultado ampliado">
     </div>
 
     <!-- SCRIPT MULTITENANT, GÉNERO, VIDEO PIP Y LÓGICA DE REPRODUCCIÓN -->
@@ -1028,20 +1170,22 @@
                                 const esVideo = url.match(/\.(mp4|webm|ogg|mov)$/i) || url.includes('video');
 
                                 const card = document.createElement('div');
-                                card.className = "bg-brand-panel border border-gray-800 rounded-2xl overflow-hidden shadow-xl reveal-scale-up";
+                                card.className = "resultado-card bg-brand-panel border border-gray-800 rounded-2xl overflow-hidden shadow-xl reveal-scale-up";
 
                                 if (esVideo) {
                                     card.innerHTML = `
-                                    <div class="aspect-square w-full bg-black relative">
-                                        <video src="${url}" class="w-full h-full object-cover" controls playsinline></video>
+                                    <div class="resultado-media">
+                                        <video src="${url}" controls playsinline preload="metadata"></video>
                                     </div>
                                 `;
                                 } else {
                                     card.innerHTML = `
-                                    <div class="aspect-square w-full bg-black relative overflow-hidden group">
-                                        <img src="${url}" alt="Resultado" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                                    <div class="resultado-media is-image" data-full="${url}">
+                                        <img src="${url}" alt="Resultado" loading="lazy">
+                                        <span class="resultado-zoom-icon"><i class="fas fa-search-plus"></i></span>
                                     </div>
                                 `;
+                                    card.querySelector('.resultado-media').addEventListener('click', () => abrirLightbox(url));
                                 }
                                 resultadosGrid.appendChild(card);
                             });
@@ -1084,6 +1228,28 @@
         const menu = document.getElementById('mobile-menu');
         btn.addEventListener('click', () => menu.classList.toggle('hidden'));
         document.querySelectorAll('#mobile-menu a').forEach(link => link.addEventListener('click', () => menu.classList.add('hidden')));
+
+        // Lightbox de imágenes (Resultados)
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+
+        function abrirLightbox(src) {
+            lightboxImg.src = src;
+            lightbox.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarLightbox() {
+            lightbox.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        lightbox.addEventListener('click', (e) => {
+            if (e.target !== lightboxImg) cerrarLightbox();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && lightbox.classList.contains('open')) cerrarLightbox();
+        });
     </script>
 </body>
 
